@@ -28,9 +28,9 @@ module.exports = function (app) {
             'url': entry.label.split('href=\"')[1].split('\">')[0]
           };
         });
-        res.send(JSON.stringify(exposeUrls));
+        res.send(exposeUrls);
       } else {
-        res.send('[]');
+        res.send([]);
       }
     });
   });
