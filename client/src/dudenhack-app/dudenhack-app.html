@@ -1,4 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-search/paper-search-bar.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
 <dom-module id="dudenhack-app">
   <template>
@@ -8,7 +11,13 @@
       }
     </style>
     <h2>Hello [[prop1]]!</h2>
-
+    <paper-search-bar hide-filter-button
+                      query="{{query}}"></paper-search-bar>
+    <paper-listbox>
+      <template is="dom-repeat" items="[[results]]">
+        <paper-item>[[item]]</paper-item>
+      </template>
+    </paper-listbox>
   </template>
 
   <script>
@@ -23,6 +32,14 @@
           prop1: {
             type: String,
             value: 'dudenhack-app'
+          },
+          query: {
+            type: String,
+            value: ''
+          },
+          results: {
+            type: Array,
+            value: ['abc', 'def', 'ghi']
           }
         };
       }
