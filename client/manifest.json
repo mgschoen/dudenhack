@@ -1,0 +1,7 @@
+{
+  "name": "dudenhack",
+  "short_name": "dudenhack",
+  "description": "Speed up Duden.de article search",
+  "start_url": "/",
+  "display": "standalone"
+}
