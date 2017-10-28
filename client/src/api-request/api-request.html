@@ -1,0 +1,48 @@
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="api-request">
+  <template>
+    <iron-ajax auto
+               debounce-duration="200"
+               url="[[computedUrl]]"
+               last-response="{{ajaxResponse}}"
+               on-response="handleResponse"></iron-ajax>
+  </template>
+  <script>
+
+    class ApiRequest extends Polymer.Element {
+      static get is() { return 'api-request'; }
+      static get properties() {
+        return {
+          query: {
+            type: String,
+            value: ''
+          },
+          computedUrl: {
+            type: String,
+            computed: 'computeUrl(query)'
+          },
+          ajaxResponse: {
+            type: Object,
+            value: {}
+          }
+        }
+      }
+
+      computeUrl (query) {
+        return query ? '/dudendirect/' + query + '/' : null;
+      }
+
+      handleResponse (event) {
+        this.dispatchEvent(
+          new CustomEvent('api-response',
+            {detail: {responseContent: this.ajaxResponse}}
+          )
+        );
+      }
+    }
+
+    window.customElements.define(ApiRequest.is, ApiRequest);
+
+  </script>
+</dom-module>

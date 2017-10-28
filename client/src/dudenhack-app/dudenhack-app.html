@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-search/paper-search-bar.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../api-request/api-request.html">
 
 <dom-module id="dudenhack-app">
   <template>
@@ -10,12 +11,15 @@
         display: block;
       }
     </style>
+
+    <api-request query="[[query]]" on-api-response="handleResponse"></api-request>
+
     <h2>Hello [[prop1]]!</h2>
     <paper-search-bar hide-filter-button
                       query="{{query}}"></paper-search-bar>
     <paper-listbox>
-      <template is="dom-repeat" items="[[results]]">
-        <paper-item>[[item]]</paper-item>
+      <template is="dom-repeat" items="[[apiResponse]]">
+        <paper-item><a href="[[item.url]]" target="_blank">[[item.key]]</a></paper-item>
       </template>
     </paper-listbox>
   </template>
@@ -39,9 +43,25 @@
           },
           results: {
             type: Array,
-            value: ['abc', 'def', 'ghi']
+            computed: 'computeResults(apiResponse)'
+          },
+          apiResponse: {
+            type: Array,
+            value: []
           }
         };
+      }
+
+      handleResponse (event) {
+        console.log(event.detail.responseContent);
+        this.apiResponse = event.detail.responseContent;
+      }
+
+      computeResults (apiResponse) {
+        console.log(apiResponse);
+        return apiResponse.map(function(v){
+          return v.key;
+        });
       }
     }
 
