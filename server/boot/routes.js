@@ -43,7 +43,7 @@ module.exports = function (app) {
    */
   app.get('/dudensearch/:query', (req, res) => {
     const query = req.params.query;
-    request('http://www.duden.de/suchen/dudenonline/' + query, (err, httpResponse, body) => {
+    request('http://www.duden.de/suchen/dudenonline/' + encodeURIComponent(query), (err, httpResponse, body) => {
       const dom = new JSDOM(body);
       const document = dom.window.document;
 

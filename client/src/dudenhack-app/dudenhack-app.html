@@ -1,7 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/paper-search/paper-search-bar.html">
+<link rel="import" href="../../bower_components/paper-search/paper-search-panel.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../api-request/api-request.html">
 
 <dom-module id="dudenhack-app">
@@ -10,18 +11,40 @@
       :host {
         display: block;
       }
+      .spinnerContainer {
+        text-align: center;
+      }
+      paper-spinner {
+        margin: 8px auto;
+      }
     </style>
 
-    <api-request query="[[query]]" on-api-response="handleResponse"></api-request>
+    <api-request query="[[query]]" on-api-response="handleResponse" active="{{busy}}"></api-request>
 
-    <h2>Hello [[prop1]]!</h2>
-    <paper-search-bar hide-filter-button
-                      query="{{query}}"></paper-search-bar>
-    <paper-listbox>
-      <template is="dom-repeat" items="[[apiResponse]]">
-        <paper-item><a href="[[item.url]]" target="_blank">[[item.key]]</a></paper-item>
-      </template>
-    </paper-listbox>
+    <!-- Search Bar -->
+    <paper-search-panel search="{{query}}"
+                        hide-filter-button
+                        loading="[[busy]]"
+                        placeholder="Search the Duden..."
+                        no-results-text="Konrad Duden knows a lot of words, but not this one."
+                        items="[[results]]"></paper-search-panel>
+
+    <!-- Loading spinner, only shown when application busy -->
+    <template is="dom-if" if="[[busy]]">
+      <div class="spinnerContainer">
+        <paper-spinner active="[[busy]]"></paper-spinner>
+      </div>
+    </template>
+
+    <!-- Result list, only shown when there are results to show -->
+    <template is="dom-if" if="[[showResults]]">
+      <paper-listbox>
+        <template is="dom-repeat" items="[[apiResponse]]">
+          <paper-item><a href="[[item.url]]" target="_blank">[[item.key]]</a></paper-item>
+        </template>
+      </paper-listbox>
+    </template>
+
   </template>
 
   <script>
@@ -33,13 +56,10 @@
       static get is() { return 'dudenhack-app'; }
       static get properties() {
         return {
-          prop1: {
-            type: String,
-            value: 'dudenhack-app'
-          },
           query: {
             type: String,
-            value: ''
+            value: '',
+            observer: 'queryChanged'
           },
           results: {
             type: Array,
@@ -48,20 +68,36 @@
           apiResponse: {
             type: Array,
             value: []
+          },
+          busy: {
+            type: Boolean,
+            value: false
+          },
+          showResults: {
+            type: Boolean,
+            computed: 'computeShowResults(results,busy)'
           }
         };
       }
 
       handleResponse (event) {
-        console.log(event.detail.responseContent);
         this.apiResponse = event.detail.responseContent;
       }
 
       computeResults (apiResponse) {
+        console.info('Number of results: ' + apiResponse.length);
         console.log(apiResponse);
         return apiResponse.map(function(v){
           return v.key;
         });
+      }
+
+      computeShowResults (results, busy) {
+        return (results.length > 0 && !busy);
+      }
+
+      queryChanged (query) {
+        if (query.length == 0) this.apiResponse = [];
       }
     }
 

@@ -4,6 +4,7 @@
   <template>
     <iron-ajax auto
                debounce-duration="200"
+               loading="{{active}}"
                url="[[computedUrl]]"
                last-response="{{ajaxResponse}}"
                on-response="handleResponse"></iron-ajax>
@@ -25,6 +26,11 @@
           ajaxResponse: {
             type: Object,
             value: {}
+          },
+          active: {
+            type: Boolean,
+            value: false,
+            notify: true
           }
         }
       }
